@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import util.IdWorker;
 
 @SpringBootApplication
-@ComponentScan("com.*")
+@ComponentScan("com.tensquare.base.*")
 public class BaseApplication {
     public static void main(String[] args) {
         SpringApplication.run(BaseApplication.class);
