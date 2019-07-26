@@ -1,9 +1,11 @@
 package com.tensquare.article.service;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -89,7 +91,7 @@ public class ArticleService {
 		Article article= (Article) redisTemplate.opsForValue().get("article_"+id);
 		if(article==null){
 			article= articleDao.findById(id).get();
-			redisTemplate.opsForValue().set("article_"+id,article);
+			redisTemplate.opsForValue().set("article_"+id,article,1, TimeUnit.DAYS);
 		}
 		return article;
 
@@ -102,6 +104,7 @@ public class ArticleService {
 	public void add(Article article) {
 		article.setId( idWorker.nextId()+"" );
 		articleDao.save(article);
+		redisTemplate.opsForValue().set("article_"+article.getId(),article,1, TimeUnit.DAYS);
 	}
 
 	/**
@@ -109,6 +112,7 @@ public class ArticleService {
 	 * @param article
 	 */
 	public void update(Article article) {
+		redisTemplate.delete("article_"+article.getId());
 		articleDao.save(article);
 	}
 
@@ -117,6 +121,7 @@ public class ArticleService {
 	 * @param id
 	 */
 	public void deleteById(String id) {
+		redisTemplate.delete("article_"+id);
 		articleDao.deleteById(id);
 	}
 
